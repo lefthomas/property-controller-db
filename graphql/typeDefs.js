@@ -1,27 +1,32 @@
 const { gql } = require("apollo-server");
 
-module.export = gql`
-  type Recipe {
-    name: String
-    description: String
-    createdAt: String
-    thumbsUp: Int
-    thumbsDown: Int
+module.exports = gql`
+  type Property {
+    objectNumber: String
+    saleNumber: String
+    lot: String
+    artist: String
+    title: String
   }
 
-  input RecipeInput {
-    name: String
-    description: String
+  input PropertyInput {
+    objectNumber: String
+    saleNumber: String
+    lot: String
+    artist: String
+    title: String
   }
 
   type Query {
-    recipe(ID: ID!): Recipe!
-    getRecipe(amount: Int): [Recipe]
+    property(ID: ID!): Property!
+    getProperty(amount: Int): [Property]
   }
 
   type Mutation {
-    createRecipe(recipeInput: RecipeInput): Recipe!
-    deleteRecipe(ID: ID!): Boolean
-    editRecipe(ID: ID!, recipeInput: RecipeInput): Boolean
+    createProperty(propertyInput: PropertyInput): Property!
   }
 `;
+
+
+mongoimport --uri "old secret" --collection properties --drop --file /Users/development/code/transferdb/csv/Book3.csv
+
