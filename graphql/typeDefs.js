@@ -9,12 +9,32 @@ module.exports = gql`
     title: String
   }
 
+  type Transfer {
+    shipper: String
+    coordinator: String
+    collectionDate: String
+    collectionTime: String
+    deliveryDate: String
+    deliveryTime: String
+    complete: Boolean
+    requestedProperty: [String]
+  }
+
   input PropertyInput {
     objectNumber: String
     saleNumber: String
     lot: String
     artist: String
     title: String
+  }
+
+  input TransferInput {
+    shipper: String
+    coordinator: String
+    collectionDate: String
+    deliveryDate: String
+    complete: Boolean
+    requestedProperty: [String]
   }
 
   type Query {
@@ -25,8 +45,8 @@ module.exports = gql`
   type Mutation {
     createProperty(propertyInput: PropertyInput): Property!
   }
+
+  type Mutation {
+    createTransfer(transferInput: TransferInput): Transfer!
+  }
 `;
-
-
-mongoimport --uri "old secret" --collection properties --drop --file /Users/development/code/transferdb/csv/Book3.csv
-
