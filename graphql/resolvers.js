@@ -1,4 +1,5 @@
 const Property = require("../models/Property");
+const Transfer = require("../models/Transfer");
 
 module.exports = {
   Query: {
@@ -22,6 +23,34 @@ module.exports = {
         title: title,
       });
       const res = await createdProperty.save();
+
+      return {
+        id: res.id,
+        ...res._doc,
+      };
+    },
+    async createTransfer(
+      _,
+      {
+        transferInput: {
+          shipper,
+          coordinator,
+          collectionDate,
+          deliveryDate,
+          complete,
+          requestedProperty,
+        },
+      }
+    ) {
+      const createdTransfer = new Transfer({
+        shipper: shipper,
+        coordinator: coordinator,
+        collectionDate: collectionDate,
+        deliveryDate: deliveryDate,
+        complete: complete,
+        requestedProperty: requestedProperty,
+      });
+      const res = await createdTransfer.save();
 
       return {
         id: res.id,
