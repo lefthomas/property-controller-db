@@ -47,6 +47,7 @@ module.exports = gql`
       departureDate: Date
       complete: Boolean
       requestedProperty: [String]
+      originLocation: String
     ): Transfer!
   }
 `;

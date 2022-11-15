@@ -2,6 +2,15 @@ const { GraphQLScalarType } = require("graphql");
 const Property = require("../models/Property");
 const Transfer = require("../models/Transfer");
 
+const options = {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+};
+
 const dateResolver = new GraphQLScalarType({
   name: "Date",
   //the value here is received from the client in Mutations
@@ -10,7 +19,7 @@ const dateResolver = new GraphQLScalarType({
   },
   //the value here is received from the server in Queries
   serialize(value) {
-    return value.toLocaleString();
+    return value.toLocaleString("en-GB", options);
   },
 });
 
