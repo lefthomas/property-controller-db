@@ -1,7 +1,22 @@
+const { GraphQLScalarType } = require("graphql");
 const Property = require("../models/Property");
 const Transfer = require("../models/Transfer");
 
+const dateResolver = new GraphQLScalarType({
+  name: "Date",
+  //the value here is received from the client in Mutations
+  parseValue(value) {
+    return value;
+  },
+  //the value here is received from the server in Queries
+  serialize(value) {
+    return value.toLocaleString();
+  },
+});
+
 module.exports = {
+  Date: dateResolver,
+
   Query: {
     async property(_, { ID }) {
       return await Property.findById(ID);
@@ -9,7 +24,13 @@ module.exports = {
     async getProperty(_, { amount }) {
       return await Property.find().sort({ createdAt: -1 }).limit(amount);
     },
+    async getTransfers() {
+      return await Transfer.find().sort({
+        additionsDate: -1,
+      });
+    },
   },
+
   Mutation: {
     async createProperty(
       _,
@@ -31,24 +52,16 @@ module.exports = {
     },
     async createTransfer(
       _,
-      {
-        transferInput: {
-          shipper,
-          coordinator,
-          collectionDate,
-          deliveryDate,
-          complete,
-          requestedProperty,
-        },
-      }
+      { shipper, coordinator, additionsDate, departureDate, originLocation }
     ) {
       const createdTransfer = new Transfer({
         shipper: shipper,
         coordinator: coordinator,
-        collectionDate: collectionDate,
-        deliveryDate: deliveryDate,
-        complete: complete,
-        requestedProperty: requestedProperty,
+        complete: false,
+        additionsDate: additionsDate,
+        departureDate: departureDate,
+        requestedProperty: [],
+        originLocation: originLocation,
       });
       const res = await createdTransfer.save();
 
