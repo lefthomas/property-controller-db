@@ -19,13 +19,23 @@ module.exports = gql`
     title: String
   }
 
+  input TransferInput {
+    shipper: String
+    coordinator: String
+    additionsDate: Date
+    departureDate: Date
+    complete: Boolean
+    requestedProperty: [PropertyInput]
+    originLocation: String
+  }
+
   type Transfer {
     shipper: String
     coordinator: String
     additionsDate: Date
     departureDate: Date
     complete: Boolean
-    requestedProperty: [String]
+    requestedProperty: [Property]
     originLocation: String
   }
 
@@ -37,6 +47,7 @@ module.exports = gql`
 
   type Mutation {
     createProperty(propertyInput: PropertyInput): Property!
+    addWorkToTransfer(ID: ID!, transferInput: TransferInput): Boolean
   }
 
   type Mutation {

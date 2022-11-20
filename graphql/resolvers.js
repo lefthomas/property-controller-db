@@ -79,5 +79,14 @@ module.exports = {
         ...res._doc,
       };
     },
+    async addWorkToTransfer(_, { ID, transferInput: { requestedProperty } }) {
+      const wasUpdated = (
+        await Transfer.updateOne(
+          { _id: ID },
+          { $push: { requestedProperty: requestedProperty } }
+        )
+      ).modifiedCount;
+      return wasUpdated;
+    },
   },
 };
