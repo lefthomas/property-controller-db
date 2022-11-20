@@ -1,4 +1,5 @@
 const { model, Schema } = require("mongoose");
+var Property = require("./Property").schema;
 
 const transferSchema = new Schema({
   shipper: String,
@@ -6,8 +7,8 @@ const transferSchema = new Schema({
   additionsDate: Date,
   departureDate: Date,
   complete: Boolean,
-  requestedProperty: Array,
   originLocation: String,
+  requestedProperty: [Property],
 });
 
 module.exports = model("Transfer", transferSchema);
