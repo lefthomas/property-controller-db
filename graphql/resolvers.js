@@ -30,13 +30,23 @@ module.exports = {
     async property(_, { ID }) {
       return await Property.findById(ID);
     },
-    async getProperty(_, { amount }) {
-      return await Property.find().sort({ createdAt: -1 }).limit(amount);
+    async getProperty(_, { ID }) {
+      return await Transfer.findById(ID);
     },
     async getTransfers() {
-      return await Transfer.find().sort({
-        additionsDate: -1,
+      return await Transfer.find({ complete: false }).sort({
+        additionsDate: 1,
       });
+    },
+    async getGlanceBox(_, { originLocation }) {
+      return await Transfer.where("complete")
+        .equals(false)
+        .where("originLocation")
+        .equals(originLocation)
+        .sort({
+          additionsDate: 1,
+        })
+        .limit(1);
     },
   },
 
@@ -61,7 +71,14 @@ module.exports = {
     },
     async createTransfer(
       _,
-      { shipper, coordinator, additionsDate, departureDate, originLocation }
+      {
+        shipper,
+        coordinator,
+        additionsDate,
+        departureDate,
+        originLocation,
+        requestedProperty,
+      }
     ) {
       const createdTransfer = new Transfer({
         shipper: shipper,
@@ -69,7 +86,7 @@ module.exports = {
         complete: false,
         additionsDate: additionsDate,
         departureDate: departureDate,
-        requestedProperty: [],
+        requestedProperty: requestedProperty,
         originLocation: originLocation,
       });
       const res = await createdTransfer.save();

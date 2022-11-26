@@ -30,6 +30,7 @@ module.exports = gql`
   }
 
   type Transfer {
+    _id: String
     shipper: String
     coordinator: String
     additionsDate: Date
@@ -41,8 +42,9 @@ module.exports = gql`
 
   type Query {
     property(ID: ID!): Property!
-    getProperty(amount: Int): [Property]
+    getProperty(ID: ID!): Transfer
     getTransfers: [Transfer]
+    getGlanceBox(originLocation: String): [Transfer]
   }
 
   type Mutation {
