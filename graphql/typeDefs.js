@@ -44,6 +44,7 @@ module.exports = gql`
     property(ID: ID!): Property!
     getProperty(ID: ID!): Transfer
     getTransfers: [Transfer]
+    getPropertyByObject(objectNumber: String): [Property]
     getGlanceBox(originLocation: String): [Transfer]
   }
 

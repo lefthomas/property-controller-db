@@ -30,6 +30,12 @@ module.exports = {
     async property(_, { ID }) {
       return await Property.findById(ID);
     },
+
+    async getPropertyByObject(_, { objectNumber }) {
+      return await Property.find({ objectNumber: objectNumber });
+    },
+
+    // gets all objects on a particular transfer
     async getProperty(_, { ID }) {
       return await Transfer.findById(ID);
     },
