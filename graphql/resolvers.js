@@ -31,18 +31,22 @@ module.exports = {
       return await Property.findById(ID);
     },
 
-    async getPropertyByObject(_, { objectNumber }) {
-      return await Property.find({ objectNumber: objectNumber });
+    async getPropertyByObject(_, { objectNumbers }) {
+      return await Property.find({ objectNumber: objectNumbers });
     },
 
     // gets all objects on a particular transfer
     async getProperty(_, { ID }) {
       return await Transfer.findById(ID);
     },
-    async getTransfers() {
-      return await Transfer.find({ complete: false }).sort({
-        additionsDate: 1,
-      });
+    async getTransfers(_, { originLocation }) {
+      return await Transfer.where("complete")
+        .equals(false)
+        .where("originLocation")
+        .equals(originLocation)
+        .sort({
+          additionsDate: 1,
+        });
     },
     async getGlanceBox(_, { originLocation }) {
       return await Transfer.where("complete")
@@ -110,6 +114,11 @@ module.exports = {
         )
       ).modifiedCount;
       return wasUpdated;
+    },
+    async deleteTransfer(_, { ID }) {
+      const wasDeleted = (await Transfer.deleteOne({ _id: ID })).deletedCount;
+      return wasDeleted;
+      // 1 if deleted, 0 if not
     },
   },
 };

@@ -43,14 +43,15 @@ module.exports = gql`
   type Query {
     property(ID: ID!): Property!
     getProperty(ID: ID!): Transfer
-    getTransfers: [Transfer]
-    getPropertyByObject(objectNumber: String): [Property]
+    getTransfers(originLocation: String): [Transfer]
+    getPropertyByObject(objectNumbers: [String]): [Property]
     getGlanceBox(originLocation: String): [Transfer]
   }
 
   type Mutation {
     createProperty(propertyInput: PropertyInput): Property!
     addWorkToTransfer(ID: ID!, transferInput: TransferInput): Boolean
+    deleteTransfer(ID: ID): Boolean
   }
 
   type Mutation {
