@@ -1,6 +1,11 @@
 const { GraphQLScalarType } = require("graphql");
 const Property = require("../models/Property");
 const Transfer = require("../models/Transfer");
+const User = require("../models/User");
+const { ApolloError } = require("apollo-server-errors");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const api_key = process.env.API_KEY;
 
 const options = {
   weekday: "long",
@@ -58,6 +63,7 @@ module.exports = {
         })
         .limit(1);
     },
+    user: (_, { ID }) => User.findById(ID),
   },
 
   Mutation: {
@@ -119,6 +125,61 @@ module.exports = {
       const wasDeleted = (await Transfer.deleteOne({ _id: ID })).deletedCount;
       return wasDeleted;
       // 1 if deleted, 0 if not
+    },
+
+    async registerUser(_, { registerInput: { username, email, password } }) {
+      //check if email exists
+      const oldUser = await User.findOne({ email });
+
+      //throw error if user exists
+
+      if (oldUser) {
+        throw new ApolloError(
+          "A User is already registered with the email " + email
+        );
+      }
+
+      //encrypt password
+
+      var encryptedPassword = await bcrypt.hash(password, 10);
+
+      //build out mongoose model (User)
+      const newUser = new User({
+        username: username,
+        email: email.toLowerCase(),
+        password: encryptedPassword,
+      });
+
+      //Create JWT (attach to user model)
+      const token = jwt.sign({ user_id: newUser._id, email }, api_key);
+      newUser.token = token;
+
+      //save user in Mongodb
+
+      const res = await newUser.save();
+
+      return {
+        id: res.id,
+        ...res._doc,
+      };
+    },
+    async loginUser(_, { loginInput: { email, password } }) {
+      //check user exists with email
+      const user = await User.findOne({ email });
+      //check password is correct
+      if (user && (await bcrypt.compare(password, user.password))) {
+        //create new token
+        const token = jwt.sign({ user_id: user._id, email }, api_key);
+        //attach token to user model
+        user.token = token;
+
+        return {
+          id: user.id,
+          ...user._doc,
+        };
+      } else {
+        throw new ApolloError("Incorrect password");
+      }
     },
   },
 };
