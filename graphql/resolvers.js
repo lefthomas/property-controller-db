@@ -1,6 +1,7 @@
 const { GraphQLScalarType } = require("graphql");
 const Property = require("../models/Property");
 const Transfer = require("../models/Transfer");
+const Hold = require("../models/Hold");
 const User = require("../models/User");
 const { ApolloError } = require("apollo-server-errors");
 const bcrypt = require("bcryptjs");
@@ -44,6 +45,9 @@ module.exports = {
     async getProperty(_, { ID }) {
       return await Transfer.findById(ID);
     },
+    async getHoldProperty(_, { ID }) {
+      return await Hold.findById(ID);
+    },
     async getTransfers(_, { originLocation }) {
       return await Transfer.where("complete")
         .equals(false)
@@ -62,6 +66,9 @@ module.exports = {
           additionsDate: 1,
         })
         .limit(1);
+    },
+    async getHoldList(_, { saleCode }) {
+      return await Hold.where("saleCode").equals(saleCode);
     },
     user: (_, { ID }) => User.findById(ID),
   },
@@ -112,6 +119,7 @@ module.exports = {
         ...res._doc,
       };
     },
+
     async addWorkToTransfer(_, { ID, transferInput: { requestedProperty } }) {
       const wasUpdated = (
         await Transfer.updateOne(
@@ -125,6 +133,27 @@ module.exports = {
       const wasDeleted = (await Transfer.deleteOne({ _id: ID })).deletedCount;
       return wasDeleted;
       // 1 if deleted, 0 if not
+    },
+    async createHold(_, { saleCode }) {
+      const createdHold = new Hold({
+        saleCode: saleCode,
+      });
+      const res = await createdHold.save();
+
+      return {
+        id: res.id,
+        ...res._doc,
+      };
+    },
+
+    async addWorkToHold(_, { ID, holdInput: { requestedProperty } }) {
+      const wasUpdated = (
+        await Hold.updateOne(
+          { _id: ID },
+          { $push: { requestedProperty: requestedProperty } }
+        )
+      ).modifiedCount;
+      return wasUpdated;
     },
 
     async registerUser(_, { registerInput: { username, email, password } }) {

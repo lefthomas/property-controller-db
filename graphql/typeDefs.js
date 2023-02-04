@@ -9,6 +9,9 @@ module.exports = gql`
     lot: String
     artist: String
     title: String
+    markHeld: Boolean
+    newRequest: Boolean
+    keepLoc: String
   }
 
   type User {
@@ -16,36 +19,6 @@ module.exports = gql`
     email: String
     password: String
     token: String
-  }
-
-  input RegisterInput {
-    username: String
-    email: String
-    password: String
-    confirmPassword: String
-  }
-
-  input LoginInput {
-    email: String
-    password: String
-  }
-
-  input PropertyInput {
-    objectNumber: String
-    saleNumber: String
-    lot: String
-    artist: String
-    title: String
-  }
-
-  input TransferInput {
-    shipper: String
-    coordinator: String
-    additionsDate: Date
-    departureDate: Date
-    complete: Boolean
-    requestedProperty: [PropertyInput]
-    originLocation: String
   }
 
   type Transfer {
@@ -59,10 +32,56 @@ module.exports = gql`
     originLocation: String
   }
 
+  type Hold {
+    _id: String
+    saleCode: String
+    requestedProperty: [Property]
+  }
+
+  input RegisterInput {
+    username: String!
+    email: String!
+    password: String!
+    confirmPassword: String!
+  }
+
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
+  input PropertyInput {
+    objectNumber: String
+    saleNumber: String
+    lot: String
+    artist: String
+    title: String
+    markHeld: Boolean
+    newRequest: Boolean
+    keepLoc: String
+  }
+
+  input TransferInput {
+    shipper: String
+    coordinator: String
+    additionsDate: Date
+    departureDate: Date
+    complete: Boolean
+    requestedProperty: [PropertyInput]
+    originLocation: String
+  }
+
+  input HoldInput {
+    saleCode: String
+    requestedProperty: [PropertyInput]
+  }
+
   type Query {
     property(ID: ID!): Property!
     getProperty(ID: ID!): Transfer
+    getHoldProperty(ID: ID!): Hold
     getTransfers(originLocation: String): [Transfer]
+    getHoldList(saleCode: String): [Hold]
     getPropertyByObject(objectNumbers: [String]): [Property]
     getGlanceBox(originLocation: String): [Transfer]
     user(id: ID!): User
@@ -70,21 +89,20 @@ module.exports = gql`
 
   type Mutation {
     createProperty(propertyInput: PropertyInput): Property!
-    addWorkToTransfer(ID: ID!, transferInput: TransferInput): Boolean
-    deleteTransfer(ID: ID): Boolean
-    registerUser(registerInput: RegisterInput): User
-    loginUser(loginInput: LoginInput): User
-  }
-
-  type Mutation {
     createTransfer(
       shipper: String
       coordinator: String
       additionsDate: Date
       departureDate: Date
       complete: Boolean
-      requestedProperty: [String]
+      requestedProperty: [PropertyInput]
       originLocation: String
     ): Transfer!
+    createHold(requestedProperty: [PropertyInput], saleCode: String): Hold!
+    addWorkToTransfer(ID: ID!, transferInput: TransferInput): Boolean
+    addWorkToHold(ID: ID!, holdInput: HoldInput): Boolean
+    deleteTransfer(ID: ID): Boolean
+    registerUser(registerInput: RegisterInput): User
+    loginUser(loginInput: LoginInput): User
   }
 `;

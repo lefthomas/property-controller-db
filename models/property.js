@@ -6,6 +6,15 @@ const propertySchema = new Schema({
   lot: String,
   artist: String,
   title: String,
+  markHeld: {
+    type: Boolean,
+    default: false,
+  },
+  newRequest: {
+    type: Boolean,
+    default: true,
+  },
+  keepLoc: String,
 });
 
 module.exports = model("Property", propertySchema);
