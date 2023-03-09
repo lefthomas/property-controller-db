@@ -1,5 +1,5 @@
 const { model, Schema } = require("mongoose");
-var Property = require("./Property").schema;
+var Property = require("./property").schema;
 
 const holdSchema = new Schema({
   saleCode: String,
