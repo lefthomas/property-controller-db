@@ -1,8 +1,8 @@
 const { GraphQLScalarType } = require("graphql");
-const Property = require("../models/Property");
-const Transfer = require("../models/Transfer");
-const Hold = require("../models/Hold");
-const User = require("../models/User");
+const Property = require("../models/property");
+const Transfer = require("../models/transfer");
+const Hold = require("../models/hold");
+const User = require("../models/user");
 const { ApolloError } = require("apollo-server-errors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
